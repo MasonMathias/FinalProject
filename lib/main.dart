@@ -1,28 +1,100 @@
 import 'package:flutter/material.dart';
+// Uncomment when Firebase is configured:
+// import 'package:firebase_core/firebase_core.dart';
+// import 'firebase_options.dart';
+import 'package:provider/provider.dart';
 import 'theme/app_theme.dart';
 import 'pages/home_page.dart';
+import 'providers/mood_provider.dart';
+import 'providers/journal_provider.dart';
+import 'providers/reminder_provider.dart';
+import 'services/reminder_service.dart';
 
 /// Main entry point for Mental Zen app
-/// This is where everything starts - think of it as the front door to our app
-void main() {
+/// 
+/// IMPORTANT: Before running, you need to:
+/// 1. Create a Firebase project
+/// 2. Run: flutterfire configure
+/// 3. This will generate firebase_options.dart
+/// 
+/// For now, we're using placeholder authentication
+/// When real auth is ready, uncomment the Firebase initialization below
+void main() async {
+  // Ensure Flutter bindings are initialized
+  // This is required before using Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  // NOTE: You need to:
+  // 1. Create a Firebase project at https://console.firebase.google.com
+  // 2. Install FlutterFire CLI: dart pub global activate flutterfire_cli
+  // 3. Run: flutterfire configure
+  // 4. This will generate firebase_options.dart
+  // 
+  // For now, we'll try to initialize but continue if it fails
+  // The app uses placeholder authentication, so it will still work
+  try {
+    // Uncomment the line below after running flutterfire configure
+    // await Firebase.initializeApp(
+    //   options: DefaultFirebaseOptions.currentPlatform,
+    // );
+    print('Note: Firebase not initialized. Run "flutterfire configure" to set up.');
+  } catch (e) {
+    print('Firebase initialization note: $e');
+    print('The app will work with placeholder data until Firebase is configured.');
+  }
+
+  // Initialize notification service for reminders
+  final reminderService = ReminderService();
+  await reminderService.initializeNotifications();
+
   runApp(const MentalZenApp());
 }
 
 /// Root widget for the Mental Zen application
-/// This sets up the overall theme and structure of the app
+/// 
+/// This sets up:
+/// - Theme (purple/blue zen colors)
+/// - State management (Provider)
+/// - Navigation
 class MentalZenApp extends StatelessWidget {
   const MentalZenApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Mental Zen',
-      // Using our custom theme that gives that calming purple/blue zen vibe
-      theme: AppTheme.darkTheme,
-      // Home page is our main navigation hub
-      home: const HomePage(),
-      // Remove the debug banner in the top right corner
-      debugShowCheckedModeBanner: false,
+    return MultiProvider(
+      // Provider setup - this makes our state available throughout the app
+      // Any widget can access these providers using Provider.of<...>(context)
+      providers: [
+        // Mood provider - manages mood tracking data
+        ChangeNotifierProvider(create: (_) {
+          final provider = MoodProvider();
+          provider.loadMoodEntries(); // Load data when app starts
+          return provider;
+        }),
+        // Journal provider - manages journal entries
+        ChangeNotifierProvider(create: (_) {
+          final provider = JournalProvider();
+          provider.loadJournalEntries(); // Load data when app starts
+          return provider;
+        }),
+        // Reminder provider - manages reminders
+        ChangeNotifierProvider(create: (_) {
+          final provider = ReminderProvider();
+          provider.initializeNotifications(); // Set up notifications
+          provider.loadReminders(); // Load reminders when app starts
+          return provider;
+        }),
+      ],
+      child: MaterialApp(
+        title: 'Mental Zen',
+        // Using our custom theme that gives that calming purple/blue zen vibe
+        theme: AppTheme.darkTheme,
+        // Home page is our main navigation hub
+        home: const HomePage(),
+        // Remove the debug banner in the top right corner
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }

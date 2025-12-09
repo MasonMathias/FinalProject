@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'mood_tracking_page.dart';
-import 'journal_entry_page.dart';
+import 'journal_list_page.dart';
 import 'analytics_page.dart';
 import 'reminders_page.dart';
 import 'settings_page.dart';
@@ -77,7 +77,7 @@ class HomePage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const JournalEntryPage(),
+                          builder: (context) => const JournalListPage(),
                         ),
                       );
                     },

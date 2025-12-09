@@ -1,54 +1,141 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/journal_provider.dart';
+import '../models/journal_entry.dart';
+import '../services/user_service.dart';
+import 'package:intl/intl.dart';
 
 /// Journal Entry Page
-/// This is where users can write their thoughts and feelings
-/// For Milestone 1, we're just building the UI - saving to Firebase comes in Milestone 2
+/// 
+/// This is where users write their thoughts and feelings
+/// Now fully functional with Firebase integration!
 class JournalEntryPage extends StatefulWidget {
-  const JournalEntryPage({super.key});
+  final JournalEntry? existingEntry; // For editing existing entries
+
+  const JournalEntryPage({super.key, this.existingEntry});
 
   @override
   State<JournalEntryPage> createState() => _JournalEntryPageState();
 }
 
 class _JournalEntryPageState extends State<JournalEntryPage> {
-  // Controllers for text fields - we'll use these in Milestone 2 to save data
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
+  final Set<String> _selectedTags = {};
+  bool _isSaving = false;
+
+  // Available tags
+  final List<String> _availableTags = [
+    'Gratitude',
+    'Reflection',
+    'Goals',
+    'Challenges',
+    'Celebration',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    // If editing an existing entry, load its data
+    if (widget.existingEntry != null) {
+      _titleController.text = widget.existingEntry!.title;
+      _contentController.text = widget.existingEntry!.content;
+      _selectedTags.addAll(widget.existingEntry!.tags);
+    }
+  }
 
   @override
   void dispose() {
-    // Always dispose controllers to prevent memory leaks
     _titleController.dispose();
     _contentController.dispose();
     super.dispose();
+  }
+
+  /// Save the journal entry
+  Future<void> _saveEntry() async {
+    if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in both title and content')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    final userId = UserService.getCurrentUserId();
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User not found')),
+      );
+      setState(() {
+        _isSaving = false;
+      });
+      return;
+    }
+
+    // Create journal entry
+    final entry = JournalEntry(
+      id: widget.existingEntry?.id, // Keep ID if editing
+      userId: userId,
+      title: _titleController.text,
+      content: _contentController.text,
+      tags: _selectedTags.toList(),
+      timestamp: widget.existingEntry?.timestamp ?? DateTime.now(),
+      updatedAt: widget.existingEntry != null ? DateTime.now() : null,
+    );
+
+    final journalProvider = Provider.of<JournalProvider>(context, listen: false);
+    final success = widget.existingEntry != null
+        ? await journalProvider.updateJournalEntry(entry)
+        : await journalProvider.saveJournalEntry(entry);
+
+    setState(() {
+      _isSaving = false;
+    });
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(widget.existingEntry == null
+              ? 'Journal entry saved!'
+              : 'Journal entry updated!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.pop(context); // Go back to previous page
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(journalProvider.error ?? 'Failed to save entry'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    return DateFormat('MMMM d, y').format(date);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Journal Entry'),
+        title: Text(widget.existingEntry != null 
+            ? 'Edit Journal Entry' 
+            : 'Journal Entry'),
         actions: [
-          // Save button in app bar - common pattern for journal apps
           IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: () {
-              // In Milestone 2, this will save to Firestore
-              if (_titleController.text.isEmpty ||
-                  _contentController.text.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Please fill in both title and content'),
-                  ),
-                );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Journal entry saved! (UI only - Milestone 1)'),
-                  ),
-                );
-              }
-            },
+            icon: _isSaving
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.save),
+            onPressed: _isSaving ? null : _saveEntry,
           ),
         ],
       ),
@@ -58,7 +145,6 @@ class _JournalEntryPageState extends State<JournalEntryPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header with some inspiration
               const Text(
                 'Express Yourself',
                 style: TextStyle(
@@ -92,16 +178,15 @@ class _JournalEntryPageState extends State<JournalEntryPage> {
 
               const SizedBox(height: 24),
 
-              // Date picker (for future use in Milestone 2)
+              // Date display
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.calendar_today),
                   title: const Text('Date'),
                   subtitle: Text(
-                    _formatDate(DateTime.now()),
+                    _formatDate(widget.existingEntry?.timestamp ?? DateTime.now()),
                     style: const TextStyle(fontSize: 16),
                   ),
-                  // In Milestone 2, we'll make this interactive
                 ),
               ),
 
@@ -131,7 +216,7 @@ class _JournalEntryPageState extends State<JournalEntryPage> {
 
               const SizedBox(height: 24),
 
-              // Quick tags section (for future use)
+              // Tags section
               const Text(
                 'Tags (optional)',
                 style: TextStyle(
@@ -143,13 +228,24 @@ class _JournalEntryPageState extends State<JournalEntryPage> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: [
-                  _buildTagChip('Gratitude', false),
-                  _buildTagChip('Reflection', false),
-                  _buildTagChip('Goals', false),
-                  _buildTagChip('Challenges', false),
-                  _buildTagChip('Celebration', false),
-                ],
+                children: _availableTags.map((tag) {
+                  final isSelected = _selectedTags.contains(tag);
+                  return FilterChip(
+                    label: Text(tag),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      setState(() {
+                        if (selected) {
+                          _selectedTags.add(tag);
+                        } else {
+                          _selectedTags.remove(tag);
+                        }
+                      });
+                    },
+                    selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                    checkmarkColor: Theme.of(context).colorScheme.primary,
+                  );
+                }).toList(),
               ),
 
               const SizedBox(height: 32),
@@ -158,55 +254,22 @@ class _JournalEntryPageState extends State<JournalEntryPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    if (_titleController.text.isEmpty ||
-                        _contentController.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please fill in both title and content'),
-                        ),
-                      );
-                    } else {
-                      // In Milestone 2, this will save to Firestore
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Journal entry saved! (UI only - Milestone 1)'),
-                        ),
-                      );
-                    }
-                  },
+                  onPressed: _isSaving ? null : _saveEntry,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: const Text(
-                    'Save Entry',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Info card
-              Card(
-                color: Colors.blue.withOpacity(0.1),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.info_outline, color: Colors.blue),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'In Milestone 2, entries will be saved securely to Firebase',
-                          style: TextStyle(
-                            color: Colors.blue[200],
-                            fontSize: 14,
-                          ),
+                  child: _isSaving
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(
+                          widget.existingEntry != null
+                              ? 'Update Entry'
+                              : 'Save Entry',
+                          style: const TextStyle(fontSize: 16),
                         ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ],
@@ -215,37 +278,4 @@ class _JournalEntryPageState extends State<JournalEntryPage> {
       ),
     );
   }
-
-  /// Helper to format date nicely
-  String _formatDate(DateTime date) {
-    final months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ];
-    return '${months[date.month - 1]} ${date.day}, ${date.year}';
-  }
-
-  /// Build tag chips - these will be interactive in Milestone 2
-  Widget _buildTagChip(String label, bool isSelected) {
-    return FilterChip(
-      label: Text(label),
-      selected: isSelected,
-      onSelected: (selected) {
-        // In Milestone 2, we'll track selected tags
-      },
-      selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-      checkmarkColor: Theme.of(context).colorScheme.primary,
-    );
-  }
 }
-

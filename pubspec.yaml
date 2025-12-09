@@ -35,6 +35,28 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
+  # Firebase - Core Firebase functionality
+  firebase_core: ^3.0.0
+  # Firestore - Our database for storing mood entries, journals, etc.
+  cloud_firestore: ^5.0.0
+  # Firebase Auth - For user authentication (using placeholder for now)
+  firebase_auth: ^5.0.0
+
+  # State Management - Provider makes it easy to share data across the app
+  provider: ^6.1.0
+
+  # Charts - For analytics visualization
+  fl_chart: ^0.68.0
+
+  # Local Notifications - For reminders
+  flutter_local_notifications: ^17.0.0
+
+  # Local Storage - For saving settings and preferences
+  shared_preferences: ^2.2.0
+
+  # Date/Time utilities - For formatting dates nicely
+  intl: ^0.19.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

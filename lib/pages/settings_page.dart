@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import '../services/settings_service.dart';
+import '../services/user_service.dart';
 
 /// Settings Page
+/// 
 /// This is where users can manage their app preferences
-/// For Milestone 1, we're building the UI - actual settings persistence comes in Milestone 2
+/// Now with full persistence using SharedPreferences!
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
@@ -11,14 +14,79 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  // Placeholder settings - in Milestone 2, these will be saved to SharedPreferences or Firebase
+  final SettingsService _settingsService = SettingsService();
+  
   bool _notificationsEnabled = true;
   bool _darkModeEnabled = true;
   bool _analyticsEnabled = true;
   String _selectedLanguage = 'English';
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  /// Load settings from storage
+  Future<void> _loadSettings() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    _notificationsEnabled = await _settingsService.getNotificationsEnabled();
+    _darkModeEnabled = await _settingsService.getDarkModeEnabled();
+    _analyticsEnabled = await _settingsService.getAnalyticsEnabled();
+    _selectedLanguage = await _settingsService.getLanguage();
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  /// Save notification setting
+  Future<void> _updateNotifications(bool value) async {
+    setState(() {
+      _notificationsEnabled = value;
+    });
+    await _settingsService.setNotificationsEnabled(value);
+  }
+
+  /// Save dark mode setting
+  Future<void> _updateDarkMode(bool value) async {
+    setState(() {
+      _darkModeEnabled = value;
+    });
+    await _settingsService.setDarkModeEnabled(value);
+  }
+
+  /// Save analytics setting
+  Future<void> _updateAnalytics(bool value) async {
+    setState(() {
+      _analyticsEnabled = value;
+    });
+    await _settingsService.setAnalyticsEnabled(value);
+  }
+
+  /// Save language setting
+  Future<void> _updateLanguage(String language) async {
+    setState(() {
+      _selectedLanguage = language;
+    });
+    await _settingsService.setLanguage(language);
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Settings')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final userEmail = UserService.getCurrentUserEmail() ?? 'user@mentalzen.app';
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -33,7 +101,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    // Profile avatar
                     CircleAvatar(
                       radius: 40,
                       backgroundColor: Theme.of(context).colorScheme.primary,
@@ -53,7 +120,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'user@example.com',
+                      userEmail,
                       style: TextStyle(
                         color: Colors.grey[400],
                         fontSize: 14,
@@ -62,10 +129,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     const SizedBox(height: 16),
                     OutlinedButton(
                       onPressed: () {
-                        // In Milestone 2, this will navigate to profile edit
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Profile editing coming in Milestone 2'),
+                            content: Text('Profile editing coming soon'),
                           ),
                         );
                       },
@@ -94,12 +160,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: const Text('Enable Notifications'),
                     subtitle: const Text('Receive reminders and updates'),
                     value: _notificationsEnabled,
-                    onChanged: (value) {
-                      setState(() {
-                        _notificationsEnabled = value;
-                      });
-                      // In Milestone 2, this will save to preferences
-                    },
+                    onChanged: _updateNotifications,
                   ),
                   const Divider(height: 1),
                   ListTile(
@@ -107,10 +168,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     subtitle: const Text('Customize notification preferences'),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
-                      // In Milestone 2, this will open detailed notification settings
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Detailed settings coming in Milestone 2'),
+                          content: Text('Detailed settings coming soon'),
                         ),
                       );
                     },
@@ -137,12 +197,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: const Text('Dark Mode'),
                     subtitle: const Text('Use dark theme'),
                     value: _darkModeEnabled,
-                    onChanged: (value) {
-                      setState(() {
-                        _darkModeEnabled = value;
-                      });
-                      // In Milestone 2, this will change the theme
-                    },
+                    onChanged: _updateDarkMode,
                   ),
                   const Divider(height: 1),
                   ListTile(
@@ -150,7 +205,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     subtitle: Text(_selectedLanguage),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
-                      // In Milestone 2, this will show language picker
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -161,18 +215,14 @@ class _SettingsPageState extends State<SettingsPage> {
                               ListTile(
                                 title: const Text('English'),
                                 onTap: () {
-                                  setState(() {
-                                    _selectedLanguage = 'English';
-                                  });
+                                  _updateLanguage('English');
                                   Navigator.pop(context);
                                 },
                               ),
                               ListTile(
                                 title: const Text('Spanish'),
                                 onTap: () {
-                                  setState(() {
-                                    _selectedLanguage = 'Spanish';
-                                  });
+                                  _updateLanguage('Spanish');
                                   Navigator.pop(context);
                                 },
                               ),
@@ -204,21 +254,16 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: const Text('Analytics'),
                     subtitle: const Text('Help improve the app'),
                     value: _analyticsEnabled,
-                    onChanged: (value) {
-                      setState(() {
-                        _analyticsEnabled = value;
-                      });
-                    },
+                    onChanged: _updateAnalytics,
                   ),
                   const Divider(height: 1),
                   ListTile(
                     title: const Text('Privacy Policy'),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
-                      // In Milestone 2, this will open privacy policy
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Privacy policy coming in Milestone 2'),
+                          content: Text('Privacy policy coming soon'),
                         ),
                       );
                     },
@@ -229,10 +274,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     subtitle: const Text('Download your journal entries'),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
-                      // In Milestone 2, this will export user data
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Data export coming in Milestone 2'),
+                          content: Text('Data export coming soon'),
                         ),
                       );
                     },
@@ -246,7 +290,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                     trailing: const Icon(Icons.chevron_right, color: Colors.red),
                     onTap: () {
-                      // In Milestone 2, this will handle account deletion
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -264,7 +307,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 Navigator.pop(context);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Account deletion coming in Milestone 2'),
+                                    content: Text('Account deletion coming soon'),
                                   ),
                                 );
                               },
@@ -298,7 +341,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 children: [
                   const ListTile(
                     title: Text('Version'),
-                    subtitle: Text('1.0.0 (Milestone 1)'),
+                    subtitle: Text('1.0.0 (Milestone 2)'),
                   ),
                   const Divider(height: 1),
                   ListTile(
@@ -321,7 +364,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Help center coming in Milestone 2'),
+                          content: Text('Help center coming soon'),
                         ),
                       );
                     },
@@ -337,7 +380,6 @@ class _SettingsPageState extends State<SettingsPage> {
               width: double.infinity,
               child: OutlinedButton(
                 onPressed: () {
-                  // In Milestone 2, this will sign out from Firebase
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
@@ -353,7 +395,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('Sign out coming in Milestone 2'),
+                                content: Text('Sign out functionality will be available when authentication is implemented'),
                               ),
                             );
                           },
@@ -377,4 +419,3 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 }
-
