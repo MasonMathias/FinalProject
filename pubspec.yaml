@@ -1,5 +1,5 @@
 name: finalproject
-description: "A new Flutter project."
+description: "Mental Zen - Mental Wellness Journal. A private, secure harbor for thoughts providing gentle insights through journaling and mood tracking."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
