@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-// Uncomment when Firebase is configured:
-// import 'package:firebase_core/firebase_core.dart';
-// import 'firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 import 'theme/app_theme.dart';
 import 'pages/home_page.dart';
@@ -25,24 +24,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Firebase
-  // NOTE: You need to:
-  // 1. Create a Firebase project at https://console.firebase.google.com
-  // 2. Install FlutterFire CLI: dart pub global activate flutterfire_cli
-  // 3. Run: flutterfire configure
-  // 4. This will generate firebase_options.dart
-  // 
-  // For now, we'll try to initialize but continue if it fails
-  // The app uses placeholder authentication, so it will still work
-  try {
-    // Uncomment the line below after running flutterfire configure
-    // await Firebase.initializeApp(
-    //   options: DefaultFirebaseOptions.currentPlatform,
-    // );
-    print('Note: Firebase not initialized. Run "flutterfire configure" to set up.');
-  } catch (e) {
-    print('Firebase initialization note: $e');
-    print('The app will work with placeholder data until Firebase is configured.');
-  }
+  // Firebase is now configured via flutterfire configure
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   // Initialize notification service for reminders
   final reminderService = ReminderService();

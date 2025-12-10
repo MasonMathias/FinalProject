@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
 import '../models/reminder.dart';
 import 'user_service.dart';
 
@@ -142,9 +143,16 @@ class ReminderService {
   /// 
   /// If it's past the time today, schedule for tomorrow
   /// Otherwise, schedule for today
-  DateTime _nextInstanceOfTime(int hour, int minute) {
-    final now = DateTime.now();
-    var scheduledDate = DateTime(now.year, now.month, now.day, hour, minute);
+  tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
+    final now = tz.TZDateTime.now(tz.local);
+    var scheduledDate = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      hour,
+      minute,
+    );
 
     // If the time has already passed today, schedule for tomorrow
     if (scheduledDate.isBefore(now)) {

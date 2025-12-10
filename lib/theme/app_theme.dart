@@ -50,7 +50,7 @@ class AppTheme {
       ),
 
       // Card theme - rounded corners for that modern feel
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: cardBackground,
         elevation: 4,
         shape: RoundedRectangleBorder(
