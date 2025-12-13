@@ -49,17 +49,19 @@ class MoodService {
     }
 
     // Query Firestore for entries belonging to this user
-    // Order by timestamp (newest first)
+    // Sort in memory to avoid needing a composite index
     return _firestore
         .collection(_collectionName)
         .where('userId', isEqualTo: userId)
-        .orderBy('timestamp', descending: true)
         .snapshots()
         .map((snapshot) {
       // Convert Firestore documents to MoodEntry objects
-      return snapshot.docs
+      final entries = snapshot.docs
           .map((doc) => MoodEntry.fromMap(doc.id, doc.data()))
           .toList();
+      // Sort by timestamp descending (newest first)
+      entries.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      return entries;
     });
   }
 
@@ -76,18 +78,26 @@ class MoodService {
       return Stream.value([]);
     }
 
-    // Query with date range
+    // Query with date range - filter by userId first, then filter and sort in memory
     return _firestore
         .collection(_collectionName)
         .where('userId', isEqualTo: userId)
-        .where('timestamp', isGreaterThanOrEqualTo: startDate.toIso8601String())
-        .where('timestamp', isLessThanOrEqualTo: endDate.toIso8601String())
-        .orderBy('timestamp', descending: false)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs
+      // Filter by date range and sort in memory to avoid composite index
+      final allEntries = snapshot.docs
           .map((doc) => MoodEntry.fromMap(doc.id, doc.data()))
           .toList();
+      
+      // Filter by date range
+      final filteredEntries = allEntries.where((entry) {
+        return entry.timestamp.isAfter(startDate.subtract(const Duration(seconds: 1))) &&
+               entry.timestamp.isBefore(endDate.add(const Duration(seconds: 1)));
+      }).toList();
+      
+      // Sort by timestamp ascending (oldest first)
+      filteredEntries.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+      return filteredEntries;
     });
   }
 

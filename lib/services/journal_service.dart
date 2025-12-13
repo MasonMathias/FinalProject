@@ -34,12 +34,15 @@ class JournalService {
     return _firestore
         .collection(_collectionName)
         .where('userId', isEqualTo: userId)
-        .orderBy('timestamp', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs
+      // Sort in memory to avoid needing a composite index
+      final entries = snapshot.docs
           .map((doc) => JournalEntry.fromMap(doc.id, doc.data()))
           .toList();
+      // Sort by timestamp descending (newest first)
+      entries.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      return entries;
     });
   }
 
@@ -57,12 +60,15 @@ class JournalService {
         .collection(_collectionName)
         .where('userId', isEqualTo: userId)
         .where('tags', arrayContains: tag)
-        .orderBy('timestamp', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs
+      // Sort in memory to avoid needing a composite index
+      final entries = snapshot.docs
           .map((doc) => JournalEntry.fromMap(doc.id, doc.data()))
           .toList();
+      // Sort by timestamp descending (newest first)
+      entries.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      return entries;
     });
   }
 

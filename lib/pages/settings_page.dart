@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/settings_service.dart';
 import '../services/user_service.dart';
+import '../providers/auth_provider.dart';
+import 'profile_page.dart';
+import 'auth/login_page.dart';
+import 'notification_settings_page.dart';
 
 /// Settings Page
 /// 
@@ -129,9 +134,10 @@ class _SettingsPageState extends State<SettingsPage> {
                     const SizedBox(height: 16),
                     OutlinedButton(
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Profile editing coming soon'),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ProfilePage(),
                           ),
                         );
                       },
@@ -168,9 +174,10 @@ class _SettingsPageState extends State<SettingsPage> {
                     subtitle: const Text('Customize notification preferences'),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Detailed settings coming soon'),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const NotificationSettingsPage(),
                         ),
                       );
                     },
@@ -391,13 +398,16 @@ class _SettingsPageState extends State<SettingsPage> {
                           child: const Text('Cancel'),
                         ),
                         TextButton(
-                          onPressed: () {
+                          onPressed: () async {
                             Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Sign out functionality will be available when authentication is implemented'),
-                              ),
-                            );
+                            final authProvider = Provider.of<AppAuthProvider>(context, listen: false);
+                            await authProvider.signOut();
+                            if (context.mounted) {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (context) => const LoginPage()),
+                                (route) => false,
+                              );
+                            }
                           },
                           child: const Text('Sign Out'),
                         ),

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/reminder_provider.dart';
 import '../models/reminder.dart';
 import '../services/user_service.dart';
+import '../services/reminder_service.dart';
 
 /// Reminders Page
 /// 
@@ -426,6 +427,101 @@ class _RemindersPageState extends State<RemindersPage> {
               ),
 
               const SizedBox(height: 24),
+
+              // Test notification button
+              Card(
+                color: Colors.green.withOpacity(0.1),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.notifications_active, color: Colors.green),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Test Notifications',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Tap the button below to test if notifications are working on your device.',
+                        style: TextStyle(
+                          color: Colors.green[200],
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            try {
+                              final reminderService = ReminderService();
+                              final success = await reminderService.showTestNotification();
+                              if (mounted) {
+                                if (success) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Test notification sent! Check your notifications.'),
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                } else {
+                                  // Show dialog to guide user to enable permissions
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('Notification Permission Required'),
+                                      content: const Text(
+                                        'Notifications are disabled. To enable:\n\n'
+                                        '1. Go to Android Settings\n'
+                                        '2. Apps → Finalproject\n'
+                                        '3. Notifications\n'
+                                        '4. Enable notifications\n\n'
+                                        'Or grant permission when prompted by the app.',
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context),
+                                          child: const Text('OK'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                              }
+                            } catch (e) {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Error: ${e.toString()}'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                          icon: const Icon(Icons.send),
+                          label: const Text('Send Test Notification'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.green,
+                            side: const BorderSide(color: Colors.green),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 16),
 
               // Info card about smart timing
               Card(
