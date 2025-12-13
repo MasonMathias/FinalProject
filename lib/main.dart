@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'theme/app_theme.dart';
 import 'pages/home_page.dart';
 import 'providers/mood_provider.dart';
@@ -22,6 +23,10 @@ void main() async {
   // Ensure Flutter bindings are initialized
   // This is required before using Firebase
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment variables from .env file
+  // This contains Firebase API keys and other sensitive configuration
+  await dotenv.load(fileName: '.env');
 
   // Initialize Firebase
   // Firebase is now configured via flutterfire configure
