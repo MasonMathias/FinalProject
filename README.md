@@ -68,11 +68,23 @@ lib/
 
 ## 🚀 Getting Started
 
+### For Teammates / New Developers
+
+**📖 See [SETUP_GUIDE.md](SETUP_GUIDE.md) for complete setup instructions!**
+
+Quick summary:
+1. Install Flutter SDK (3.9.2+)
+2. Clone the repository
+3. Run `flutter pub get`
+4. **Create `.env` file with Firebase credentials** (see SETUP_GUIDE.md)
+5. Run `flutter run`
+
 ### Prerequisites
 - Flutter SDK (3.9.2 or higher)
 - Dart SDK
 - Android Studio / VS Code with Flutter extensions
 - An emulator or physical device for testing
+- **Firebase project access** (get credentials from team lead)
 
 ### Installation
 
@@ -87,7 +99,13 @@ cd FinalProject
 flutter pub get
 ```
 
-3. Run the app:
+3. **Create `.env` file** (required for Firebase):
+   - Copy the format from `SETUP_GUIDE.md`
+   - Get Firebase credentials from your teammate
+   - Place `.env` file in project root
+   - **Note:** `.env` is in `.gitignore` and won't be in the repo
+
+4. Run the app:
 ```bash
 flutter run
 ```
@@ -162,9 +180,24 @@ Mental Zen uses a calming dark theme with:
 - Chart library integration for analytics
 - Testing and bug fixes
 
-## 🤖 AI Usage
+## 📚 Documentation
 
-This project used AI assistance for implementation guidance. See [AI_USAGE_LOG.md](AI_USAGE_LOG.md) for detailed documentation of all AI interactions.
+- **[DESIGN_DOCUMENTATION.md](DESIGN_DOCUMENTATION.md)** - Comprehensive design documentation including wireframes, UML diagrams, architecture design, and design reasoning
+- **[TEAM_COLLABORATION_LOG.md](TEAM_COLLABORATION_LOG.md)** - Team collaboration activities, shared responsibilities, and teamwork documentation
+- **[REFLECTION_AND_LEARNING_SUMMARY.md](REFLECTION_AND_LEARNING_SUMMARY.md)** - Project reflection, learning outcomes, challenges, and lessons learned
+- **[AI_USAGE_LOG.md](AI_USAGE_LOG.md)** - Documentation of AI assistance usage during development
+- **[SETUP_GUIDE.md](SETUP_GUIDE.md)** - Complete setup instructions for new developers
+- **[FIREBASE_SETUP.md](FIREBASE_SETUP.md)** - Firebase configuration and setup guide
+
+## 🚀 Getting Started with Firebase
+
+The app uses full Firebase Authentication and Firestore:
+
+1. See `FIREBASE_SETUP.md` for detailed instructions
+2. Ensure `.env` file exists with Firebase API keys (see `SETUP_GUIDE.md`)
+3. Firebase is fully configured and working
+
+**Note:** Make sure to create a `.env` file with your Firebase credentials. See `SETUP_GUIDE.md` for the format.
 
 ## 📄 License
 
@@ -175,25 +208,6 @@ This project is part of a Flutter & Firebase course assignment.
 - Flutter team for the amazing framework
 - Firebase for backend services
 - Course instructors for project guidance
-
----
-
-## 🚀 Getting Started with Firebase
-
-The app uses full Firebase Authentication and Firestore:
-
-1. See `FIREBASE_SETUP.md` for detailed instructions
-2. Ensure `.env` file exists with Firebase API keys (see `.env.example`)
-3. Firebase is fully configured and working
-
-**Note:** Make sure to create a `.env` file from `.env.example` with your Firebase credentials.
-
-## 📚 Documentation
-
-- `MILESTONE_2_COMPLETE.md` - Complete implementation summary
-- `FIREBASE_SETUP.md` - Firebase setup guide
-- `AUTHENTICATION_TASKS.md` - Authentication implementation guide
-- `MILESTONE_2_PLAN.md` - Original implementation plan
 
 ---
 

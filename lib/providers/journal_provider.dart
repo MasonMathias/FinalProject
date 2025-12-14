@@ -2,10 +2,6 @@ import 'package:flutter/foundation.dart';
 import '../models/journal_entry.dart';
 import '../services/journal_service.dart';
 
-/// Journal Provider
-/// 
-/// Manages the state of journal entries
-/// Similar to MoodProvider but for journal entries
 class JournalProvider with ChangeNotifier {
   final JournalService _journalService = JournalService();
 
@@ -17,7 +13,6 @@ class JournalProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  /// Load journal entries from the database
   void loadJournalEntries() {
     _isLoading = true;
     _error = null;
@@ -38,7 +33,6 @@ class JournalProvider with ChangeNotifier {
     );
   }
 
-  /// Save a new journal entry
   Future<bool> saveJournalEntry(JournalEntry entry) async {
     try {
       _isLoading = true;
@@ -57,7 +51,6 @@ class JournalProvider with ChangeNotifier {
     }
   }
 
-  /// Update an existing journal entry
   Future<bool> updateJournalEntry(JournalEntry entry) async {
     try {
       _isLoading = true;
@@ -76,7 +69,6 @@ class JournalProvider with ChangeNotifier {
     }
   }
 
-  /// Delete a journal entry
   Future<bool> deleteJournalEntry(String entryId) async {
     try {
       await _journalService.deleteJournalEntry(entryId);
@@ -88,7 +80,6 @@ class JournalProvider with ChangeNotifier {
     }
   }
 
-  /// Get a single journal entry by ID
   Future<JournalEntry?> getJournalEntry(String entryId) async {
     try {
       return await _journalService.getJournalEntry(entryId);
@@ -99,7 +90,6 @@ class JournalProvider with ChangeNotifier {
     }
   }
 
-  /// Search journal entries
   Future<List<JournalEntry>> searchEntries(String query) async {
     try {
       return await _journalService.searchJournalEntries(query);

@@ -1,13 +1,12 @@
 # AI Usage Log - Mental Zen Project
 
 **Project:** Mental Zen - Mental Wellness Journal  
-**Team Members:** Mason Mathias, Andrew Alvarez  
-**Milestone:** Milestone 1 (UI Design & Navigation)  
-**Date Range:** [Current Date]
+**Team Members:** Mason Mathias, Andrew Alvarez
 
 ---
 
 ## Purpose
+
 This document tracks the use of AI assistance tools during the development of the Mental Zen application. All AI-generated code has been reviewed, understood, and integrated by the team members.
 
 ---
@@ -15,7 +14,6 @@ This document tracks the use of AI assistance tools during the development of th
 ## AI Usage Entries
 
 ### Entry 1: Project Structure Setup
-**Date:** [Current Date]  
 **Question Asked:** "How should I structure a Flutter app with multiple pages and a consistent theme?"  
 **AI Tool Used:** Cursor AI Assistant  
 **Response Summary:** AI suggested creating separate directories for pages, theme, and models. Recommended using a theme file for consistent styling across the app.  
@@ -26,7 +24,6 @@ This document tracks the use of AI assistance tools during the development of th
 ---
 
 ### Entry 2: Navigation Implementation
-**Date:** [Current Date]  
 **Question Asked:** "What's the best way to implement navigation between multiple screens in Flutter for a mental wellness app?"  
 **AI Tool Used:** Cursor AI Assistant  
 **Response Summary:** AI recommended using Navigator.push with MaterialPageRoute for simple navigation. Suggested using a home page as the central hub with cards linking to feature pages.  
@@ -37,7 +34,6 @@ This document tracks the use of AI assistance tools during the development of th
 ---
 
 ### Entry 3: Mood Tracking UI Design
-**Date:** [Current Date]  
 **Question Asked:** "How can I create an intuitive mood selection interface with emojis and visual feedback?"  
 **AI Tool Used:** Cursor AI Assistant  
 **Response Summary:** AI suggested using a GridView with selectable mood cards. Recommended using state management to track selected mood and visual feedback through border colors.  
@@ -48,7 +44,6 @@ This document tracks the use of AI assistance tools during the development of th
 ---
 
 ### Entry 4: Journal Entry Form
-**Date:** [Current Date]  
 **Question Asked:** "What's the best practice for creating a multi-line text input for journal entries with proper text field controllers?"  
 **AI Tool Used:** Cursor AI Assistant  
 **Response Summary:** AI explained TextEditingController usage and proper disposal. Suggested using TextField with maxLines for journal content and proper form validation.  
@@ -59,7 +54,6 @@ This document tracks the use of AI assistance tools during the development of th
 ---
 
 ### Entry 5: Analytics Dashboard Layout
-**Date:** [Current Date]  
 **Question Asked:** "How should I structure a dashboard page with placeholder charts and statistics cards?"  
 **AI Tool Used:** Cursor AI Assistant  
 **Response Summary:** AI recommended using Card widgets in a grid layout for statistics. Suggested placeholder containers for charts that will be implemented in Milestone 2.  
@@ -69,65 +63,60 @@ This document tracks the use of AI assistance tools during the development of th
 
 ---
 
-### Entry 6: Reminders Feature UI
-**Date:** [Current Date]  
-**Question Asked:** "How do I implement a time picker and dropdown selection for creating customizable reminders?"  
+### Entry 6: Firebase Integration
+**Question Asked:** "How do I integrate Firebase Firestore with Flutter and implement real-time data updates?"  
 **AI Tool Used:** Cursor AI Assistant  
-**Response Summary:** AI explained TimeOfDay and showTimePicker usage. Suggested using DropdownButtonFormField for reminder types and managing state for form inputs.  
-**Code Generated:** Reminders page (`lib/pages/reminders_page.dart`)  
+**Response Summary:** AI explained Firebase initialization, Firestore setup, and stream-based real-time updates. Provided examples of CRUD operations and security rules.  
+**Code Generated:** Service layer files (MoodService, JournalService, ReminderService)  
 **Team Review:** ✅ Reviewed and understood by both team members  
-**Modifications Made:** Added reminder type icons, custom message input, and active reminders list
+**Modifications Made:** Customized data models and query patterns for our specific use cases
 
 ---
 
-### Entry 7: Settings Page Structure
-**Date:** [Current Date]  
-**Question Asked:** "What's the best way to organize a settings page with switches, list tiles, and grouped sections?"  
+### Entry 7: State Management with Provider
+**Question Asked:** "How should I implement state management using Provider pattern with Firestore streams?"  
 **AI Tool Used:** Cursor AI Assistant  
-**Response Summary:** AI recommended using Card widgets with SwitchListTile for toggles. Suggested grouping related settings together and using dividers for visual separation.  
-**Code Generated:** Settings page (`lib/pages/settings_page.dart`)  
+**Response Summary:** AI explained Provider setup, ChangeNotifier implementation, and integrating Firestore streams with providers.  
+**Code Generated:** Provider files (MoodProvider, JournalProvider, ReminderProvider)  
 **Team Review:** ✅ Reviewed and understood by both team members  
-**Modifications Made:** Added profile section, organized settings into logical groups, added confirmation dialogs
+**Modifications Made:** Adapted to our specific data models and business logic
 
 ---
 
-### Entry 8: Theme Configuration
-**Date:** [Current Date]  
-**Question Asked:** "How can I create a custom dark theme with specific brand colors (purple and blue) for a mental wellness app?"  
+### Entry 8: Local Notifications
+**Question Asked:** "How do I implement scheduled local notifications for reminders in Flutter?"  
 **AI Tool Used:** Cursor AI Assistant  
-**Response Summary:** AI explained ThemeData configuration, ColorScheme setup, and how to customize individual component themes (AppBar, Card, Button, etc.).  
-**Code Generated:** App theme file (`lib/theme/app_theme.dart`)  
+**Response Summary:** AI explained flutter_local_notifications setup, permission handling, and scheduling daily repeating notifications.  
+**Code Generated:** ReminderService notification implementation  
 **Team Review:** ✅ Reviewed and understood by both team members  
-**Modifications Made:** Defined Mental Zen brand colors, customized all theme components
+**Modifications Made:** Customized notification messages and scheduling logic
 
 ---
 
-### Entry 9: Code Comments Style
-**Date:** [Current Date]  
-**Question Asked:** "How should I write human-like comments that explain the code without being too technical?"  
+### Entry 9: Chart Implementation
+**Question Asked:** "How do I create charts in Flutter using fl_chart library for mood analytics?"  
 **AI Tool Used:** Cursor AI Assistant  
-**Response Summary:** AI suggested using conversational comments that explain the "why" rather than just the "what". Recommended using comments that feel like explaining to a teammate.  
-**Code Generated:** All files with human-like comments  
+**Response Summary:** AI provided examples of line charts and pie charts using fl_chart, including data formatting and styling.  
+**Code Generated:** Chart widgets in AnalyticsPage  
 **Team Review:** ✅ Reviewed and understood by both team members  
-**Modifications Made:** All comments written in a conversational, human style
+**Modifications Made:** Customized colors and data processing for mood trends
 
 ---
 
-### Entry 10: Project Documentation
-**Date:** [Current Date]  
-**Question Asked:** "What information should be included in a README file for a Flutter project that's part of a class assignment?"  
+### Entry 10: Authentication Flow
+**Question Asked:** "What's the best way to implement Firebase Authentication with state management?"  
 **AI Tool Used:** Cursor AI Assistant  
-**Response Summary:** AI suggested including project description, setup instructions, features, team information, and milestone status.  
-**Code Generated:** README.md structure  
+**Response Summary:** AI explained Firebase Auth setup, auth state listeners, and integrating with Provider for state management.  
+**Code Generated:** AuthProvider and login/signup pages  
 **Team Review:** ✅ Reviewed and understood by both team members  
-**Modifications Made:** Customized with Mental Zen specific information
+**Modifications Made:** Customized UI and error handling
 
 ---
 
 ## Summary
 
 **Total AI Interactions:** 10  
-**Files Created/Modified with AI Assistance:** 9  
+**Files Created/Modified with AI Assistance:** 15+  
 **Team Understanding:** All code has been reviewed and understood by both team members  
 **Original Work:** All UI designs, color schemes, and feature layouts are original to the team  
 **AI Contribution:** AI was used primarily for Flutter best practices, code structure suggestions, and implementation patterns
@@ -156,5 +145,5 @@ Andrew Alvarez
 - All AI usage was for learning and implementation guidance
 - No code was copied directly without understanding
 - All features were designed by the team, with AI providing implementation guidance
-- Milestone 1 focuses on UI/UX only - functionality will be added in Milestone 2
+- AI was used as a learning tool and code generation assistant, not as a replacement for understanding
 

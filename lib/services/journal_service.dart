@@ -2,15 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/journal_entry.dart';
 import 'user_service.dart';
 
-/// Journal Service
-/// 
-/// This service handles all database operations for journal entries
-/// Similar to MoodService, but for journal entries instead
 class JournalService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static const String _collectionName = 'journal_entries';
 
-  /// Save a journal entry to the database
   Future<String> saveJournalEntry(JournalEntry entry) async {
     try {
       final docRef = await _firestore
@@ -22,8 +17,6 @@ class JournalService {
     }
   }
 
-  /// Get all journal entries for the current user
-  /// Returns a stream for real-time updates
   Stream<List<JournalEntry>> getJournalEntries() {
     final userId = UserService.getCurrentUserId();
     
@@ -46,9 +39,6 @@ class JournalService {
     });
   }
 
-  /// Get journal entries by tag
-  /// 
-  /// Useful for filtering entries (e.g., show only "gratitude" entries)
   Stream<List<JournalEntry>> getJournalEntriesByTag(String tag) {
     final userId = UserService.getCurrentUserId();
     
@@ -72,11 +62,6 @@ class JournalService {
     });
   }
 
-  /// Search journal entries by title or content
-  /// 
-  /// Note: Firestore doesn't have full-text search built-in
-  /// This is a simple implementation - for production, you might want
-  /// to use a search service like Algolia
   Future<List<JournalEntry>> searchJournalEntries(String query) async {
     final userId = UserService.getCurrentUserId();
     
@@ -85,9 +70,6 @@ class JournalService {
     }
 
     try {
-      // Get all entries and filter in memory
-      // This works for small datasets, but for large apps you'd want
-      // a proper search solution
       final snapshot = await _firestore
           .collection(_collectionName)
           .where('userId', isEqualTo: userId)
@@ -97,7 +79,6 @@ class JournalService {
           .map((doc) => JournalEntry.fromMap(doc.id, doc.data()))
           .toList();
 
-      // Filter entries that match the search query
       final queryLower = query.toLowerCase();
       return allEntries.where((entry) {
         return entry.title.toLowerCase().contains(queryLower) ||
@@ -108,7 +89,6 @@ class JournalService {
     }
   }
 
-  /// Get a single journal entry by ID
   Future<JournalEntry?> getJournalEntry(String entryId) async {
     try {
       final doc = await _firestore
@@ -126,14 +106,12 @@ class JournalService {
     }
   }
 
-  /// Update an existing journal entry
   Future<void> updateJournalEntry(JournalEntry entry) async {
     if (entry.id == null) {
       throw Exception('Cannot update entry without ID');
     }
 
     try {
-      // Update the entry and set updatedAt timestamp
       final updatedEntry = entry.copyWith(
         updatedAt: DateTime.now(),
       );
@@ -147,7 +125,6 @@ class JournalService {
     }
   }
 
-  /// Delete a journal entry
   Future<void> deleteJournalEntry(String entryId) async {
     try {
       await _firestore.collection(_collectionName).doc(entryId).delete();
